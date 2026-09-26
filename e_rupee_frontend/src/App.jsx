@@ -1,122 +1,40 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState } from "react";
+import Sidebar from "./components/Sidebar";
+import WalletTab from "./components/WalletTab";
+import SendTab from "./components/SendTab";
+import LedgerTab from "./components/LedgerTab";
+import RecoveryTab from "./components/RecoveryTab";
+import ComplianceTab from "./components/ComplianceTab";
 
-function App() {
-  const [count, setCount] = useState(0)
+const WALLET_LABELS = ["Wallet A (Alice)", "Wallet B (Bob)", "Wallet C", "Wallet D", "Wallet E"];
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState("wallet");
+  const [wallets, setWallets] = useState([]);
+  const [pendingTxHash, setPendingTxHash] = useState("");
+
+  function handleCreateWallet(walletData) {
+    const label = WALLET_LABELS[wallets.length] || `Wallet ${wallets.length + 1}`;
+    setWallets((prev) => [...prev, { ...walletData, label }]);
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="app-shell">
+      <Sidebar activeTab={activeTab} onChange={setActiveTab} />
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      <main className="main">
+        {activeTab === "wallet" && (
+          <WalletTab wallets={wallets} onCreateWallet={handleCreateWallet} />
+        )}
+        {activeTab === "send" && (
+          <SendTab wallets={wallets} onDisclosureCreated={setPendingTxHash} />
+        )}
+        {activeTab === "ledger" && <LedgerTab />}
+        {activeTab === "recovery" && <RecoveryTab wallets={wallets} />}
+        {activeTab === "compliance" && (
+          <ComplianceTab pendingTxHash={pendingTxHash} />
+        )}
+      </main>
+    </div>
+  );
 }
-
-export default App
