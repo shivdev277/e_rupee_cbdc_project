@@ -1,3 +1,5 @@
 pycryptodome
 ecdsa
 cryptography
+flask
+flask-cors
